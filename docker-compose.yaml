@@ -1,0 +1,16 @@
+
+version: "3.7"
+
+services:
+
+  pyenv:
+    build: 
+      dockerfile: pyenv.Dockerfile
+      context: .
+    image: py_pyenv
+
+  source:
+    build: 
+      dockerfile: source.Dockerfile
+      context: .
+    image: py_source    
