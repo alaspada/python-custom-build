@@ -51,7 +51,6 @@ ENV PYTHON_CPPFLAGS="-I${CUSTOM_PYTHON_DIST}/include"
 ENV PYTHON_CONFIGURE_OPTS="--enable-shared LDFLAGS=${PYTHON_LDFLAGS} CPPFLAGS=${PYTHON_CPPFLAGS}"
 ENV PIP_NO_WARN_SCRIPT_LOCATION=true
 
-ADD ./config/python.env /var/tmp/python.env
 RUN set -ex \
     && mkdir -p ${CUSTOM_PYTHON_DIST} \
     && curl "https://www.python.org/ftp/python/${CUSTOM_PYTHON_VER}/Python-${CUSTOM_PYTHON_VER}.tgz" > /var/tmp/Python-${CUSTOM_PYTHON_VER}.tgz \
@@ -62,6 +61,11 @@ RUN set -ex \
     && LD_RUN_PATH=${PYTHON_LD_RUN_PATH} ./configure --enable-shared --prefix=${CUSTOM_PYTHON_DIST} \
     && LD_RUN_PATH=${PYTHON_LD_RUN_PATH} make \
     && make install 
+
+# Python: testing sqlite bindings
+RUN set -ex \
+    && LD_LIBRARY_PATH="${CUSTOM_PYTHON_DIST}/lib" \
+        "${CUSTOM_PYTHON_DIST}/bin/python3" -c "import sqlite3; print(sqlite3.sqlite_version)" 
 
 #* Script
 ADD wpy.bash /var/tmp/wpy 
